@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/06/18 15:07:45 by marvin           ###   ########.fr       */
+/*   Updated: 2022/06/28 17:20:27 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../headers/philosophers.h"
-
+sfgdsgdffsd
 int	insert_value(char *args, int *philo)
 {
 	int	error;
