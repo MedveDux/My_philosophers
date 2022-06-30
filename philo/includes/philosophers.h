@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 14:36:27 by marvin            #+#    #+#             */
-/*   Updated: 2022/06/28 19:56:03 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/06/30 20:07:09 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,32 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include "../libft/libft.h"
 # include <pthread.h>
 # include <sys/time.h>
 
-typedef struct s_const
-{
-	int			num_philo;
-	int			time_die;
-	int			time_eat;
-	int			time_sleep;
-	int			must_eat;
-	long long	begin_time;
-}	t_const;
+typedef struct s_const_philosophers	t_cp;
 
-typedef struct s_philosophers
+typedef struct s_philo
 {
-	t_const	*philo;
-	pthread_mutex_t printf;
-	pthread_mutex_t	*left;
+	int				id;
 	pthread_mutex_t	*right;
+	pthread_mutex_t	*left;
+	t_cp			*all;
+	time_t			start_time;
 }	t_philo;
+
+typedef struct s_const_philosophers
+{
+	int				num_philo;
+	int				time_die;
+	int				time_eat;
+	int				time_sleep;
+	int				must_eat;
+	int				dead;
+	time_t			start_time;
+	t_philo			*all_philo;
+	pthread_mutex_t	printf;
+	pthread_mutex_t	*forks;
+}	t_cp;
 
 #endif
