@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 14:36:27 by marvin            #+#    #+#             */
-/*   Updated: 2022/06/30 20:07:09 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/03 16:47:15 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right;
 	pthread_mutex_t	*left;
 	t_cp			*all;
-	time_t			start_time;
+	pthread_t		pthread;
 }	t_philo;
 
 typedef struct s_const_philosophers
@@ -45,9 +45,10 @@ typedef struct s_const_philosophers
 	int				time_sleep;
 	int				must_eat;
 	int				dead;
-	time_t			start_time;
+	long long		start_time;
 	t_philo			*all_philo;
 	pthread_mutex_t	printf;
+	pthread_mutex_t	check;
 	pthread_mutex_t	*forks;
 }	t_cp;
 

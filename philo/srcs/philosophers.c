@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/06/30 20:09:39 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/03 17:05:55 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,16 +98,18 @@ int	parser(t_cp *cp, int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 }
+
 void	init_mutex(t_cp *cp)
 {
-	pthread_mutex_t *mutex;
+	pthread_mutex_t	*mutex;
 	int				i;
 
 	i = cp->num_philo;
 	mutex = malloc (sizeof(mutex) * cp->num_philo);
-	while(i--)
+	while (i--)
 		pthread_mutex_init(&mutex[i], NULL);
-	pthread_mutex_init(&cp->printf, NULL)
+	pthread_mutex_init(&cp->printf, NULL);
+	pthread_mutex_init(&cp->check, NULL);
 	cp->forks = mutex;
 }
 
@@ -123,6 +125,7 @@ void	init_philosophers(t_cp *cp)
 		philo[i].id = i;
 		philo[i].right = &cp->forks[philo[i].id];
 		philo[i].left = &cp->forks[(philo[i].id + 1) % cp->num_philo];
+		philo[i].all = cp;
 		i++;
 	}
 	cp->all_philo = philo;
@@ -130,21 +133,33 @@ void	init_philosophers(t_cp *cp)
 
 void	*routine(void *all_philo)
 {
-	t_philo	*philo;
-	
+	t_philo *philo;
+
 	philo = (t_philo *)all_philo;
-	philo->start_time = ft_time();
+	while ()
+	{
+		
+	}
 }
 
-void	init_pthreads(t_cp *cp)
+int	active2(t_cp *cp)
 {
-	pthread_t	*threads;
+	
+}
+
+int	active(t_cp *cp)
+{
 	int			i;
 
-	i = cp->num_philo;
-	threads = malloc(sizeof(pthread_t) * cp->num_philo);
-	while (i--)
-		pthread_create(&treads[i], NULL, routine, (void *)&cp->all_philo[i]);
+	i = 0;
+	cp->start_time = ft_time();
+	while (i < cp->num_philo)
+	{
+		pthread_create(&cp->all_philo[i].pthread, NULL, routine, (void *)&cp->all_philo[i]);
+	 i +=2;
+	}
+	usleep(300);
+	return(active2(cp));
 }
 
 int	main(int argc, char **argv)
@@ -153,8 +168,8 @@ int	main(int argc, char **argv)
 
 	if (parser(&cp, argc, argv))
 		return (EXIT_FAILURE);
-	printf("%d", cp.time_sleep);
-	printf("%d", cp.must_eat);
+	// printf("%d", cp.time_sleep);
+	// printf("%d", cp.must_eat);
 	if (cp.must_eat == 0 || cp.num_philo == 0)
 	{
 		printf("eat and philo value must be >=1\n");
@@ -162,7 +177,7 @@ int	main(int argc, char **argv)
 	}
 	init_mutex(&cp);
 	init_philosophers(&cp);
-	init_pthreads(&cp);
+	active(&cp);
 }
 
 
@@ -185,7 +200,6 @@ void	ft_usleep(int time)
 	long	tmp_time;
 
 	tmp_time = ft_time();
-	usleep(time * 920);
 	while (ft_time() < time + tmp_time)
-		usleep (time * 3);
+		usleep (100);
 }
