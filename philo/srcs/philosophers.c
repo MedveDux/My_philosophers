@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/07/08 16:50:36 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/08 19:03:29 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,19 +102,19 @@ int	parser(t_cp *cp, int argc, char **argv)
 
 int	init_mutex(t_cp *cp)
 {
-	pthread_mutex_t	*mutex;
+	// pthread_mutex_t	*mutex;
 	int				i;
 
 	i = cp->num_philo;
-	mutex = malloc (sizeof(mutex) * cp->num_philo);
-	if (!mutex)
-	{
-		printf("Error: mutex_init did not work\n");
-		return (1);
-	}
+	cp->forks = malloc (sizeof(pthread_mutex_t) * cp->num_philo);
+	// if (!mutex)
+	// {
+	// 	printf("Error: mutex_init did not work\n");
+	// 	return (1);
+	// }
 	while (i--)
 	{
-		if (pthread_mutex_init(&mutex[i], NULL))
+		if (pthread_mutex_init(&cp->forks[i], NULL))
 		{
 			free(cp->forks);
 			printf("Error: mutex_init did not work\n");
@@ -123,7 +123,7 @@ int	init_mutex(t_cp *cp)
 	}
 	pthread_mutex_init(&cp->printf, NULL);
 	pthread_mutex_init(&cp->check, NULL);
-	cp->forks = mutex;
+	// cp->forks = mutex;
 	return (0);
 }
 
@@ -132,14 +132,16 @@ int	init_philosophers(t_cp *cp)
 	int		i;
 	t_philo	*philo;
 
+	write(1, "55", 2);
 	philo = malloc(sizeof(t_philo) * cp->num_philo);
 	if (!philo)
-		return (1);
+		return (1);//
+	write(1, "55", 2);
 	i = 0;
-	cp->n_p = cp->num_philo;
 	cp->eat = 0;
 	while (i < cp->num_philo)
 	{
+		philo[i].n_p = cp->must_eat;
 		philo[i].id = i;
 		philo[i].right = &cp->forks[philo[i].id];
 		philo[i].left = &cp->forks[(philo[i].id + 1) % cp->num_philo];
@@ -211,16 +213,16 @@ void	*routine(void *all_philo)
 	t_philo	*philo;
 
 	philo = (t_philo *)all_philo;
-	while (philo->all->n_p && philo->all->dead != 1)//
+	while (philo->n_p && philo->all->dead != 1)//
 	{
 		eat_time(philo);
 		my_printf(philo, "is sleeping", philo->id);
 		my_time(philo->all->time_sleep, philo);
 		my_printf(philo, "is thinking", philo->id);
-		if (philo->all->n_p > 0)
-			philo->all->n_p--;
+		if (philo->n_p > 0)
+			philo->n_p--;
 		pthread_mutex_lock(&philo->all->check);
-		if (philo->all->n_p == 0)
+		if (philo->n_p == 0)
 			philo->all->eat++;
 		pthread_mutex_unlock(&philo->all->check);
 	}
@@ -285,7 +287,7 @@ void	check(t_cp *cp)
 			i = 0;
 		pthread_mutex_lock(&cp->check);
 		if ((ft_time() - cp->all_philo[i].last_eat - cp->start_time) \
-		> cp->time_die && (cp->n_p != 0))
+		> cp->time_die && (cp->all_philo[i].n_p != 0))
 		{
 			cp->dead = 1;
 			printf("%lli %i died", ft_time() - cp->start_time, \
@@ -308,6 +310,7 @@ int	main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	// printf("%d", cp.time_sleep);
 	// printf("%d", cp.must_eat);
+	// printf("as%das", cp.num_philo);
 	if (cp.must_eat == 0 || cp.num_philo == 0)
 	{
 		printf("eat and philo value must be >=1\n");
@@ -317,9 +320,14 @@ int	main(int argc, char **argv)
 	{
 		printf("%lld 1 has taken a fork\n", ft_time());
 		usleep(cp.time_die);
-		printf("%d 1 dead", cp.time_die + 1);//
+		printf("%d 1 diad", cp.time_die + 1);//
 		exit(0);
 	}
+	// write(1, "45", 2);
+	// init_mutex(&cp);
+	// write(1, "46", 2);
+	// init_philosophers(&cp);
+	// write(1, "47", 2);
 	if (init_mutex(&cp) || init_philosophers(&cp))
 		return (EXIT_FAILURE);
 	active(&cp);
