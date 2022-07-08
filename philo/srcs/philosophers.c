@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/07/03 17:05:55 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/08 16:50:36 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,29 +97,47 @@ int	parser(t_cp *cp, int argc, char **argv)
 		printf_error_arguments();
 		return (EXIT_FAILURE);
 	}
+	return (EXIT_SUCCESS);
 }
 
-void	init_mutex(t_cp *cp)
+int	init_mutex(t_cp *cp)
 {
 	pthread_mutex_t	*mutex;
 	int				i;
 
 	i = cp->num_philo;
 	mutex = malloc (sizeof(mutex) * cp->num_philo);
+	if (!mutex)
+	{
+		printf("Error: mutex_init did not work\n");
+		return (1);
+	}
 	while (i--)
-		pthread_mutex_init(&mutex[i], NULL);
+	{
+		if (pthread_mutex_init(&mutex[i], NULL))
+		{
+			free(cp->forks);
+			printf("Error: mutex_init did not work\n");
+			return (1);
+		}
+	}
 	pthread_mutex_init(&cp->printf, NULL);
 	pthread_mutex_init(&cp->check, NULL);
 	cp->forks = mutex;
+	return (0);
 }
 
-void	init_philosophers(t_cp *cp)
+int	init_philosophers(t_cp *cp)
 {
 	int		i;
 	t_philo	*philo;
 
 	philo = malloc(sizeof(t_philo) * cp->num_philo);
+	if (!philo)
+		return (1);
 	i = 0;
+	cp->n_p = cp->num_philo;
+	cp->eat = 0;
 	while (i < cp->num_philo)
 	{
 		philo[i].id = i;
@@ -129,37 +147,157 @@ void	init_philosophers(t_cp *cp)
 		i++;
 	}
 	cp->all_philo = philo;
+	return (0);
+}
+void unluck_mutex(t_cp *cp)
+{
+	int	i;
+
+	i = cp->num_philo;
+	while (i--)
+	{
+		pthread_mutex_unlock(&cp->forks[i]);
+		pthread_mutex_destroy(&cp->forks[i]);
+	}
+	pthread_mutex_unlock(&cp->printf);
+	pthread_mutex_destroy(&cp->printf);
+	pthread_mutex_unlock(&cp->check);
+	pthread_mutex_destroy(&cp->check);
+}
+
+void detach_threads(t_cp *cp)
+{
+	int	i;
+
+	i = cp->num_philo;
+	while (i--)
+		pthread_join(cp->all_philo[i].pthread, NULL);
+}
+
+void my_printf(t_philo *philo, char *s, int id)
+{
+	pthread_mutex_lock(&philo->all->printf);
+	if (!(philo->all->dead))
+		printf("%lld %d %s\n", ft_time() - philo->all->start_time, id + 1, s);
+	pthread_mutex_unlock(&philo->all->printf);
+}
+
+void my_time(long long time, t_philo *philo)
+{
+	long long	buf;
+
+	buf = ft_time();
+	while (ft_time() - buf < time)
+		usleep (1);
+}
+ 
+void eat_time(t_philo *philo)
+{
+	pthread_mutex_lock(philo->right);
+	my_printf(philo, "has taken a fork", philo->id);
+	pthread_mutex_lock(philo->left);
+	my_printf(philo, "has taken a fork", philo->id);
+	pthread_mutex_lock(&philo->all->check);
+	philo->last_eat = ft_time() - philo->all->start_time;
+	pthread_mutex_unlock(&philo->all->check);
+	my_printf(philo, "is eating", philo->id);
+	my_time(philo->all->time_eat, philo);
+	pthread_mutex_unlock(philo->right);
+	pthread_mutex_unlock(philo->left);
 }
 
 void	*routine(void *all_philo)
 {
-	t_philo *philo;
+	t_philo	*philo;
 
 	philo = (t_philo *)all_philo;
-	while ()
+	while (philo->all->n_p && philo->all->dead != 1)//
 	{
-		
+		eat_time(philo);
+		my_printf(philo, "is sleeping", philo->id);
+		my_time(philo->all->time_sleep, philo);
+		my_printf(philo, "is thinking", philo->id);
+		if (philo->all->n_p > 0)
+			philo->all->n_p--;
+		pthread_mutex_lock(&philo->all->check);
+		if (philo->all->n_p == 0)
+			philo->all->eat++;
+		pthread_mutex_unlock(&philo->all->check);
 	}
+	return (0);
 }
 
 int	active2(t_cp *cp)
 {
-	
+	int	i;
+
+	i = 1;
+	while (i < cp->num_philo)
+	{
+		pthread_create(&cp->all_philo[i].pthread, NULL, \
+			routine, (void *)&cp->all_philo[i]);
+		// {
+		// 	unluck_mutex (cp);
+		// 	end_threads(cp);
+		// 	printf("Error: A stream was not created");
+		// 	return (EXIT_FAILURE);
+		// }
+		i += 2;
+	}
+	return (0);
 }
 
 int	active(t_cp *cp)
 {
-	int			i;
+	int	i;
 
 	i = 0;
 	cp->start_time = ft_time();
 	while (i < cp->num_philo)
 	{
-		pthread_create(&cp->all_philo[i].pthread, NULL, routine, (void *)&cp->all_philo[i]);
-	 i +=2;
+		pthread_create(&cp->all_philo[i].pthread, NULL, \
+			routine, (void *)&cp->all_philo[i]);
+		// {
+		// 	unluck_mutex(cp);
+		// 	end_threads(cp);
+		// 	printf("Error: A stream was not created");
+		// 	return (EXIT_FAILURE);
+		// }
+		i += 2;
 	}
 	usleep(300);
-	return(active2(cp));
+	return (active2(cp));
+}
+void	free_all(t_cp *cp)
+{
+	free(cp->all_philo);
+	free(cp->forks);
+}
+
+void	check(t_cp *cp)
+{
+	int	i;
+
+	i = 0;
+	while (1)
+	{
+		if (i == cp->num_philo)
+			i = 0;
+		pthread_mutex_lock(&cp->check);
+		if ((ft_time() - cp->all_philo[i].last_eat - cp->start_time) \
+		> cp->time_die && (cp->n_p != 0))
+		{
+			cp->dead = 1;
+			printf("%lli %i died", ft_time() - cp->start_time, \
+			cp->all_philo->id + 1);
+			pthread_mutex_unlock(&cp->check);
+			break ;
+		}
+		if (cp->eat == cp->must_eat)
+			break ;
+		pthread_mutex_unlock(&cp->check);
+		i++;
+	}
 }
 
 int	main(int argc, char **argv)
@@ -175,9 +313,21 @@ int	main(int argc, char **argv)
 		printf("eat and philo value must be >=1\n");
 		return (EXIT_FAILURE);
 	}
-	init_mutex(&cp);
-	init_philosophers(&cp);
+	if (cp.num_philo == 1)
+	{
+		printf("%lld 1 has taken a fork\n", ft_time());
+		usleep(cp.time_die);
+		printf("%d 1 dead", cp.time_die + 1);//
+		exit(0);
+	}
+	if (init_mutex(&cp) || init_philosophers(&cp))
+		return (EXIT_FAILURE);
 	active(&cp);
+	check(&cp);
+	detach_threads(&cp);
+	unluck_mutex(&cp);
+	free_all(&cp);
+	return (0);
 }
 
 
@@ -187,19 +337,3 @@ int	main(int argc, char **argv)
 
 
 
-long	ft_time(void)
-{
-	struct timeval	time;
-
-	gettimeofday(&time, NULL);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
-}
-
-void	ft_usleep(int time)
-{
-	long	tmp_time;
-
-	tmp_time = ft_time();
-	while (ft_time() < time + tmp_time)
-		usleep (100);
-}
