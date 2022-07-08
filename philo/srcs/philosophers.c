@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/07/08 19:21:58 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/08 19:24:41 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,7 +322,7 @@ int	main(int argc, char **argv)
 	}
 	if (cp.num_philo == 1)
 	{
-		printf("%lld 1 has taken a fork\n", ft_time());
+		printf("%d 1 has taken a fork\n", 0);
 		usleep(cp.time_die);
 		printf("%d 1 diad", cp.time_die + 1);//
 		exit(0);
