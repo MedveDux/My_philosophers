@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 15:07:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/07/08 19:03:29 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/08 19:21:58 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,11 +132,11 @@ int	init_philosophers(t_cp *cp)
 	int		i;
 	t_philo	*philo;
 
-	write(1, "55", 2);
+	// write(1, "55", 2);
 	philo = malloc(sizeof(t_philo) * cp->num_philo);
 	if (!philo)
 		return (1);//
-	write(1, "55", 2);
+	// write(1, "55", 2);
 	i = 0;
 	cp->eat = 0;
 	while (i < cp->num_philo)
@@ -281,6 +281,7 @@ void	check(t_cp *cp)
 	int	i;
 
 	i = 0;
+
 	while (1)
 	{
 		if (i == cp->num_philo)
@@ -295,11 +296,14 @@ void	check(t_cp *cp)
 			pthread_mutex_unlock(&cp->check);
 			break ;
 		}
-		if (cp->eat == cp->must_eat)
+		// printf("%d %d\n", cp->must_eat, cp->eat);
+		if (cp->eat == cp->num_philo)
 			break ;
 		pthread_mutex_unlock(&cp->check);
 		i++;
+		// usleep(1000);
 	}
+	// printf("ads\n");
 }
 
 int	main(int argc, char **argv)
