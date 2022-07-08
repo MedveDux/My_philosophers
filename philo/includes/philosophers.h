@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/18 14:36:27 by marvin            #+#    #+#             */
-/*   Updated: 2022/07/08 18:42:35 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/08 19:46:04 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef struct s_const_philosophers
 	t_philo			*all_philo;
 	pthread_mutex_t	printf;
 	pthread_mutex_t	check;
+	pthread_mutex_t	mutex_dead;
 	pthread_mutex_t	*forks;
 }	t_cp;
 
