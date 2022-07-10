@@ -6,7 +6,7 @@
 #    By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/28 18:38:53 by cyelena           #+#    #+#              #
-#    Updated: 2022/07/08 19:50:08 by cyelena          ###   ########.fr        #
+#    Updated: 2022/07/10 15:04:35 by cyelena          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,27 +14,24 @@ NAME	= philo
 
 INC		= includes/philosophers.h
 
-FILES		= philosophers.c utils.c
+FILES		= philosophers.c utils.c active.c init.c time.c
 SRCS_DIR		= srcs/
 
 SRCS		= $(addprefix $(SRCS_DIR), $(FILES))
 
 CC			= gcc
 
-FLAG		= -Wall -Werror -Wextra -pthread
-FLAGS		= #-g -fsanitize=thread
-# -g -fsanitize=address
+FLAGS		= -Wall -Werror -Wextra -pthread #-g -fsanitize=thread
+
 OBJS 		= $(SRCS:.c=.o)
 
 all:	$(NAME)
 
 $(NAME):	$(OBJS) $(INC)
 	$(CC) $(FLAGS) $(SRCS) -o $(NAME)
-#  $(CC) $(SRCS) -o $(NAME)
 
 %.o: %.c $(INC) Makefile
 	$(CC) $(FLAGS) -c $< -o $@
-# $(CC) -c $< -o $@
 		
 clean:
 		rm -rf $(OBJS)
