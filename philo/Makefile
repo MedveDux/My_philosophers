@@ -6,7 +6,7 @@
 #    By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/28 18:38:53 by cyelena           #+#    #+#              #
-#    Updated: 2022/07/10 15:04:35 by cyelena          ###   ########.fr        #
+#    Updated: 2022/07/10 15:07:37 by cyelena          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ $(NAME):	$(OBJS) $(INC)
 clean:
 		rm -rf $(OBJS)
 		
-fclean:
+fclean: clean
 		rm -rf $(NAME)
 		
 re: fclean all
