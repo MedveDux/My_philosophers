@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/10 15:14:20 by cyelena           #+#    #+#             */
-/*   Updated: 2022/07/10 17:50:41 by cyelena          ###   ########.fr       */
+/*   Updated: 2022/07/11 18:52:43 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <sys/time.h>
 # include <sys/stat.h>
 # include <semaphore.h>
+# include <signal.h>
 # include <fcntl.h>
 
 typedef struct s_const_philosophers	t_cp;
@@ -53,4 +54,20 @@ typedef struct s_const_philosophers
 	sem_t			*my_printf;
 	sem_t			*died;
 }	t_cp;
+
+long long	ft_time(void);
+void		ft_usleep(int time);
+int			ft_my_atoi(const char *str, int *number);
+void		printf_error_arguments(void);
+int			insert_value(char *argv, int *philo);
+void		init_sems(t_cp *cp);
+int			init_philosophers(t_cp *cp);
+int			create_process(t_cp *cp);
+void		*routine(void *one);
+void		eat(t_philo *philo, t_cp *cp);
+void		ft_printing(t_cp *cp, char *s, int id);
+void		check(t_philo *philo);
+void		sem_cl(t_cp *cp);
+void		ft_kill(t_cp *cp);
+int			parser(t_cp *cp, int argc, char **argv);
 #endif
