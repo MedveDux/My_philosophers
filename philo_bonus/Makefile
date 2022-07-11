@@ -6,7 +6,7 @@
 #    By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/10 17:25:01 by cyelena           #+#    #+#              #
-#    Updated: 2022/07/11 18:53:53 by cyelena          ###   ########.fr        #
+#    Updated: 2022/07/11 18:55:28 by cyelena          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ SRCS		= $(addprefix $(SRCS_DIR), $(FILES))
 
 CC			= gcc
 
-FLAGS		= -Wall -Werror -Wextra -pthread -g -fsanitize=thread
+FLAGS		= -Wall -Werror -Wextra -pthread #-g -fsanitize=thread
 
 OBJS 		= $(SRCS:.c=.o)
 
